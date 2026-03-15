@@ -1,7 +1,7 @@
 # STRucture DEtermination Libary
 
 STRUDEL is a python library for determining the structure of molecules from their rotational constants of moments of inertia.
-The main improvement over other codes is that the moments of inertia/rotational constants can  be weighted according to their uncertainties.
+The main improvement over other codes is that the moments of inertia/rotational constants can be weighted according to their uncertainties.
 
 The structure is defined via internal coordinates in the Z-matrix formalism.
 

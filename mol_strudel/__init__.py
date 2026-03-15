@@ -205,38 +205,42 @@ def summarize_results(
     for val, err in zip(popt, perr):
         params.append((val, err))
         report_params.append(f"{val:11.6f} ± {err:11.6f}")
-    report_params = '\n'.join(report_params)
+    report_params = "\n".join(report_params)
 
     # Statistics
     stats = {}
-    stats['Degf'] = N_degf = len(ys) - len(popt)
-    stats['Deviation'] = deviation = np.sqrt(np.sum(residuals**2) / N_degf)
-    stats['RMS'] = rms = np.sqrt(np.mean(residuals**2))
+    stats["Degf"] = N_degf = len(ys) - len(popt)
+    stats["Deviation"] = deviation = np.sqrt(np.sum(residuals**2) / N_degf)
+    stats["RMS"] = rms = np.sqrt(np.mean(residuals**2))
 
     if sigmas is not None:
-        stats['wrms'] = wrms = np.sqrt(np.mean((residuals / sigmas) ** 2))
+        stats["wrms"] = wrms = np.sqrt(np.mean((residuals / sigmas) ** 2))
     else:
         wrms = None
 
-    report_stats = ['Statistics:']
+    report_stats = ["Statistics:"]
     if moments_of_inertia:
         report_stats.append(
             f"Deviation of Fit: {deviation:12.8f} [uA²]  (Sqrt( Sum( (Io-c)**2 )/Degf)"
         )
-        report_stats.append(f"RMS of Fit:       {rms:12.8f} [uA²]  (Sqrt( Mean( (Io-c)**2 ))")
+        report_stats.append(
+            f"RMS of Fit:       {rms:12.8f} [uA²]  (Sqrt( Mean( (Io-c)**2 ))"
+        )
         report_stats.append(f"Degf:           {N_degf:5.0f}")
     else:
         report_stats.append(
             f"Deviation of Fit: {deviation*1000:5.0f} kHz  (Sqrt( Sum( (Bo-c)**2 )/Degf)"
         )
-        report_stats.append(f"RMS of Fit:       {rms*1000:5.0f} kHz  (Sqrt( Mean( (Bo-c)**2 ))")
+        report_stats.append(
+            f"RMS of Fit:       {rms*1000:5.0f} kHz  (Sqrt( Mean( (Bo-c)**2 ))"
+        )
         report_stats.append(f"Degf:             {N_degf:5.0f}")
 
     if sigmas is not None:
         report_stats.append(
             f"WRMS of Fit:      {wrms:5.2f}    (Sqrt( Mean( (Bo-c)**2 / sigma**2 ))"
         )
-    report_stats = '\n'.join(report_stats)
+    report_stats = "\n".join(report_stats)
 
     # Residuals
     report_residuals = []
@@ -246,8 +250,8 @@ def summarize_results(
     else:
         report_residuals.append("Residuals [kHz]:")
         report_residuals.append(str(residuals * 1000))
-    report_residuals = '\n'.join(report_residuals)
-    
+    report_residuals = "\n".join(report_residuals)
+
     # XYZ Coordinates
     masses = np.array(masses_array[0])
     zmat = create_zmat(popt)
@@ -261,16 +265,16 @@ def summarize_results(
     report_coords = ["Cartesian Coordinates [A]:"]
     for x, y, z in coords:
         report_coords.append(f"{x:13.6f} {y:13.6f} {z:13.6f}")
-    report_coords = '\n'.join(report_coords)
+    report_coords = "\n".join(report_coords)
 
     output = {
-        'params': params,
-        'stats': stats,
-        'residuals': residuals,
-        'coords': coords,
-        'report_params': report_params,
-        'report_stats': report_stats,
-        'report_residuals': report_residuals,
-        'report_coords': report_coords,
+        "params": params,
+        "stats": stats,
+        "residuals": residuals,
+        "coords": coords,
+        "report_params": report_params,
+        "report_stats": report_stats,
+        "report_residuals": report_residuals,
+        "report_coords": report_coords,
     }
     return output

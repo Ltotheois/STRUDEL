@@ -240,7 +240,6 @@ class TestPropargylChloride(unittest.TestCase):
         self.assertTrue(np.allclose(popt, popt_lit))
         self.assertTrue(np.allclose(perr, perr_lit, rtol=1e-2))
 
-
     def test_printing_results(self):
         constants_mask_all = np.full((10, 3), True)
         constanst_mask_exc = np.full((10, 3), True)
@@ -249,18 +248,60 @@ class TestPropargylChloride(unittest.TestCase):
         constants_masks = [constants_mask_all, constanst_mask_exc]
 
         for constants_mask in constants_masks:
-            I_e_SE = (strudel.h / (8 * np.pi**2 * B_e_SE * 1e6))
+            I_e_SE = strudel.h / (8 * np.pi**2 * B_e_SE * 1e6)
             sigmas_I = (strudel.h / (8 * np.pi**2 * B_e_SE * 1e6)) * sigmas / B_e_SE
             p0 = initial_params_qcc
 
-            popt, pcov, perr = strudel.fit_moments_of_inertia(fzmat, masses, I_e_SE, p0=p0, sigmas=None, constants_mask=constants_mask)
-            _ = strudel.summarize_results(fzmat, masses, popt, perr, B_e_SE, moments_of_inertia=True, sigmas=None, constants_mask=constants_mask)
+            popt, pcov, perr = strudel.fit_moments_of_inertia(
+                fzmat, masses, I_e_SE, p0=p0, sigmas=None, constants_mask=constants_mask
+            )
+            _ = strudel.summarize_results(
+                fzmat,
+                masses,
+                popt,
+                perr,
+                B_e_SE,
+                moments_of_inertia=True,
+                sigmas=None,
+                constants_mask=constants_mask,
+            )
 
-            popt, pcov, perr = strudel.fit_moments_of_inertia(fzmat, masses, I_e_SE, p0=p0, sigmas=sigmas_I)
-            _ = strudel.summarize_results(fzmat, masses, popt, perr, B_e_SE, moments_of_inertia=True, sigmas=sigmas_I, constants_mask=constants_mask)
+            popt, pcov, perr = strudel.fit_moments_of_inertia(
+                fzmat, masses, I_e_SE, p0=p0, sigmas=sigmas_I
+            )
+            _ = strudel.summarize_results(
+                fzmat,
+                masses,
+                popt,
+                perr,
+                B_e_SE,
+                moments_of_inertia=True,
+                sigmas=sigmas_I,
+                constants_mask=constants_mask,
+            )
 
-            popt, pcov, perr = strudel.fit_rotational_constants(fzmat, masses, B_e_SE, p0=p0, sigmas=None)
-            _ = strudel.summarize_results(fzmat, masses, popt, perr, B_e_SE, sigmas=None, constants_mask=constants_mask)
+            popt, pcov, perr = strudel.fit_rotational_constants(
+                fzmat, masses, B_e_SE, p0=p0, sigmas=None
+            )
+            _ = strudel.summarize_results(
+                fzmat,
+                masses,
+                popt,
+                perr,
+                B_e_SE,
+                sigmas=None,
+                constants_mask=constants_mask,
+            )
 
-            popt, pcov, perr = strudel.fit_rotational_constants(fzmat, masses, B_e_SE, p0=p0, sigmas=sigmas)
-            _ = strudel.summarize_results(fzmat, masses, popt, perr, B_e_SE, sigmas=sigmas, constants_mask=constants_mask)
+            popt, pcov, perr = strudel.fit_rotational_constants(
+                fzmat, masses, B_e_SE, p0=p0, sigmas=sigmas
+            )
+            _ = strudel.summarize_results(
+                fzmat,
+                masses,
+                popt,
+                perr,
+                B_e_SE,
+                sigmas=sigmas,
+                constants_mask=constants_mask,
+            )
