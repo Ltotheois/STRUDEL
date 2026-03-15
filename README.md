@@ -12,7 +12,7 @@ Examples for different molecules are provided in the *examples* folder.
 An examplary workflow is explained for propargyl chloride (C3H3Cl).
 First, the libraray is imported and the masses for the different isotopes are defined for easier handling
 ```python
-import mol_strudel as str
+import mol_strudel as strudel
 import numpy as np
 
 
@@ -140,11 +140,11 @@ p0 = [1.06, 1.20, 1.45, 1.79, 1.09, 90, 89, 112, 107, 122]
 
 With all the data prepared, the structure can be fitted by running
 ```python
-popt, pcov, perr = str.fit_rotational_constants(fzmat, masses, B_e_SE, p0=p0, sigmas=None)
+popt, pcov, perr = strudel.fit_rotational_constants(fzmat, masses, B_e_SE, p0=p0, sigmas=None)
 ```
 Afterwards, the results can be displayed by running
 ```python
-output = str.summarize_results(fzmat, masses, popt, perr, B_e_SE, sigmas=sigmas)
+output = strudel.summarize_results(fzmat, masses, popt, perr, B_e_SE, sigmas=sigmas)
 print(output['report_params'])
 print()
 print(output['report_stats'])

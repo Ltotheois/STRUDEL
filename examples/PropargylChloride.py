@@ -30,7 +30,7 @@ Run with:
 """
 
 
-import mol_strudel as str
+import mol_strudel as strudel
 import numpy as np
 
 
@@ -157,22 +157,22 @@ initial_params_qcc = (
 
 
 if __name__ == '__main__':
-    I_e_SE = (str.h / (8 * np.pi**2 * B_e_SE * 1e6))
-    sigmas_I = (str.h / (8 * np.pi**2 * B_e_SE * 1e6)) * sigmas / B_e_SE
+    I_e_SE = (strudel.h / (8 * np.pi**2 * B_e_SE * 1e6))
+    sigmas_I = (strudel.h / (8 * np.pi**2 * B_e_SE * 1e6)) * sigmas / B_e_SE
     p0 = initial_params_qcc
 
     outputs = []
-    popt, pcov, perr = str.fit_moments_of_inertia(fzmat, masses, I_e_SE, p0=p0, sigmas=None)
-    outputs.append(str.summarize_results(fzmat, masses, popt, perr, B_e_SE, moments_of_inertia=True, sigmas=None))
+    popt, pcov, perr = strudel.fit_moments_of_inertia(fzmat, masses, I_e_SE, p0=p0, sigmas=None)
+    outputs.append(strudel.summarize_results(fzmat, masses, popt, perr, B_e_SE, moments_of_inertia=True, sigmas=None))
 
-    popt, pcov, perr = str.fit_moments_of_inertia(fzmat, masses, I_e_SE, p0=p0, sigmas=sigmas_I)
-    outputs.append(str.summarize_results(fzmat, masses, popt, perr, B_e_SE, moments_of_inertia=True, sigmas=sigmas_I))
+    popt, pcov, perr = strudel.fit_moments_of_inertia(fzmat, masses, I_e_SE, p0=p0, sigmas=sigmas_I)
+    outputs.append(strudel.summarize_results(fzmat, masses, popt, perr, B_e_SE, moments_of_inertia=True, sigmas=sigmas_I))
 
-    popt, pcov, perr = str.fit_rotational_constants(fzmat, masses, B_e_SE, p0=p0, sigmas=None)
-    outputs.append(str.summarize_results(fzmat, masses, popt, perr, B_e_SE, sigmas=None))
+    popt, pcov, perr = strudel.fit_rotational_constants(fzmat, masses, B_e_SE, p0=p0, sigmas=None)
+    outputs.append(strudel.summarize_results(fzmat, masses, popt, perr, B_e_SE, sigmas=None))
 
-    popt, pcov, perr = str.fit_rotational_constants(fzmat, masses, B_e_SE, p0=p0, sigmas=sigmas)
-    outputs.append(str.summarize_results(fzmat, masses, popt, perr, B_e_SE, sigmas=sigmas))
+    popt, pcov, perr = strudel.fit_rotational_constants(fzmat, masses, B_e_SE, p0=p0, sigmas=sigmas)
+    outputs.append(strudel.summarize_results(fzmat, masses, popt, perr, B_e_SE, sigmas=sigmas))
 
     print()
     print('|' + ' Inertia (unw.)    | Inertia (wei.)    | Rot Const (unw.)  | Rot Const (wei.)  |' )

@@ -18,7 +18,7 @@ Run with:
 """
 
 
-import mol_strudel as str
+import mol_strudel as strudel
 import numpy as np
 
 
@@ -94,18 +94,16 @@ p0 = [
 
 
 if __name__ == '__main__':
-    print_kwargs = {'print_stats': True, 'print_resid': False, 'print_struct': False, 'print_params': True}
-
-    popt, pcov, perr = str.fit_rotational_constants(fzmat, masses, B_e_SE, p0=p0)
-    output = str.summarize_results(fzmat, masses, popt, perr, B_e_SE)
+    popt, pcov, perr = strudel.fit_rotational_constants(fzmat, masses, B_e_SE, p0=p0)
+    output = strudel.summarize_results(fzmat, masses, popt, perr, B_e_SE)
     print('# Fit to the rotational constants\n')
     print(output['report_params'])
     print()
     print(output['report_stats'])
 
-    I_e_SE = str.h / (8 * np.pi**2 * (B_e_SE * 1e6))
-    popt, pcov, perr = str.fit_moments_of_inertia(fzmat, masses, I_e_SE, p0=p0)
-    output = str.summarize_results(fzmat, masses, popt, perr, I_e_SE, moments_of_inertia=True)
+    I_e_SE = strudel.h / (8 * np.pi**2 * (B_e_SE * 1e6))
+    popt, pcov, perr = strudel.fit_moments_of_inertia(fzmat, masses, I_e_SE, p0=p0)
+    output = strudel.summarize_results(fzmat, masses, popt, perr, I_e_SE, moments_of_inertia=True)
     print('\n\n\n# Fit to the moments of inertia\n')
     print(output['report_params'])
     print()

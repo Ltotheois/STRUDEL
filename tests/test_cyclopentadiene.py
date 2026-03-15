@@ -5,7 +5,7 @@
 # Description : Tests for mol-strudel library
 
 import unittest
-import mol_strudel as str
+import mol_strudel as strudel
 import numpy as np
 
 
@@ -66,7 +66,7 @@ B_e_SE = np.array(
     ]
 )
 
-I_e_SE = str.h / (8 * np.pi**2 * (B_e_SE * 1e6))
+I_e_SE = strudel.h / (8 * np.pi**2 * (B_e_SE * 1e6))
 
 
 p0 = [
@@ -133,7 +133,7 @@ class TestPropargylChloride(unittest.TestCase):
         # as STRFIT by Zbigniew Kisiel
         # Z. Kisiel, J. Mol. Spectrosc. 218, 58-67 (2003)
 
-        popt, pcov, perr = str.fit_moments_of_inertia(
+        popt, pcov, perr = strudel.fit_moments_of_inertia(
             fzmat, masses, I_e_SE, p0=p0, sigmas=None
         )
 
@@ -146,11 +146,11 @@ class TestPropargylChloride(unittest.TestCase):
 
         ms = masses[0]
         zmat = fzmat(popt)
-        coords = str.internal_to_cartesian(zmat)
+        coords = strudel.internal_to_cartesian(zmat)
 
         center_of_mass = np.sum(coords * ms[:, np.newaxis], axis=0) / np.sum(ms)
         coords -= center_of_mass
-        eigvals, eigvecs = str.diagonalize_I_tensor(coords, ms)
+        eigvals, eigvecs = strudel.diagonalize_I_tensor(coords, ms)
         coords = coords @ eigvecs
 
         for column_strudel, column_strfit in zip(coords.T, strfit_xyz_coords.T):
