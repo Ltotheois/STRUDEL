@@ -161,7 +161,7 @@ def fit_moments_of_inertia(
     return popt, pcov, perr
 
 
-def print_results(
+def summarize_results(
     create_zmat,
     masses_array,
     popt,
@@ -170,10 +170,6 @@ def print_results(
     constants_mask=None,
     moments_of_inertia=False,
     sigmas=None,
-    print_params=True,
-    print_stats=True,
-    print_resid=True,
-    print_struct=True,
 ):
     if moments_of_inertia:
         fit_function = lambda *args, **kwargs: calculate_moments_of_inertia(
@@ -204,53 +200,55 @@ def print_results(
             sigmas *= 1e20 / const.u
 
     # Parameters
-    if print_params:
-        print("Parameters:")
-        for val, err in zip(popt, perr):
-            print(f"{val:11.6f} ± {err:11.6f}")
+    report_params = ["Parameters:"]
+    params = []
+    for val, err in zip(popt, perr):
+        params.append((val, err))
+        report_params.append(f"{val:11.6f} ± {err:11.6f}")
+    report_params = '\n'.join(report_params)
 
     # Statistics
-    N_degf = len(ys) - len(popt)
-    DEVIATION = np.sqrt(np.sum(residuals**2) / N_degf)
-    RMS = np.sqrt(np.mean(residuals**2))
+    stats = {}
+    stats['Degf'] = N_degf = len(ys) - len(popt)
+    stats['Deviation'] = deviation = np.sqrt(np.sum(residuals**2) / N_degf)
+    stats['RMS'] = rms = np.sqrt(np.mean(residuals**2))
 
     if sigmas is not None:
-        WRMS = np.sqrt(np.mean((residuals / sigmas) ** 2))
+        stats['wrms'] = wrms = np.sqrt(np.mean((residuals / sigmas) ** 2))
     else:
-        WRMS = None
+        wrms = None
 
-    if print_stats:
-        if moments_of_inertia:
-            print()
-            print(
-                f"Deviation of Fit: {DEVIATION:12.8f} [uA²]  (Sqrt( Sum( (Io-c)**2 )/Degf)"
-            )
-            print(f"RMS of Fit:       {RMS:12.8f} [uA²]  (Sqrt( Mean( (Io-c)**2 ))")
-            print(f"Degf:           {N_degf:5.0f}")
-        else:
-            print()
-            print(
-                f"Deviation of Fit: {DEVIATION*1000:5.0f} kHz  (Sqrt( Sum( (Bo-c)**2 )/Degf)"
-            )
-            print(f"RMS of Fit:       {RMS*1000:5.0f} kHz  (Sqrt( Mean( (Bo-c)**2 ))")
-            print(f"Degf:             {N_degf:5.0f}")
+    report_stats = ['Statistics:']
+    if moments_of_inertia:
+        report_stats.append(
+            f"Deviation of Fit: {deviation:12.8f} [uA²]  (Sqrt( Sum( (Io-c)**2 )/Degf)"
+        )
+        report_stats.append(f"RMS of Fit:       {rms:12.8f} [uA²]  (Sqrt( Mean( (Io-c)**2 ))")
+        report_stats.append(f"Degf:           {N_degf:5.0f}")
+    else:
+        report_stats.append(
+            f"Deviation of Fit: {deviation*1000:5.0f} kHz  (Sqrt( Sum( (Bo-c)**2 )/Degf)"
+        )
+        report_stats.append(f"RMS of Fit:       {rms*1000:5.0f} kHz  (Sqrt( Mean( (Bo-c)**2 ))")
+        report_stats.append(f"Degf:             {N_degf:5.0f}")
 
-        if sigmas is not None:
-            print(
-                f"WRMS of Fit:      {WRMS:5.2f}    (Sqrt( Mean( (Bo-c)**2 / sigma**2 ))"
-            )
+    if sigmas is not None:
+        report_stats.append(
+            f"WRMS of Fit:      {wrms:5.2f}    (Sqrt( Mean( (Bo-c)**2 / sigma**2 ))"
+        )
+    report_stats = '\n'.join(report_stats)
 
     # Residuals
-    if print_resid:
-        print()
-        if moments_of_inertia:
-            print("Residuals [uA²]:")
-            print(residuals)
-        else:
-            print("Residuals [kHz]:")
-            print(residuals * 1000)
-
-    # Print XYZ Structure
+    report_residuals = []
+    if moments_of_inertia:
+        report_residuals.append("Residuals [uA²]:")
+        report_residuals.append(str(residuals))
+    else:
+        report_residuals.append("Residuals [kHz]:")
+        report_residuals.append(str(residuals * 1000))
+    report_residuals = '\n'.join(report_residuals)
+    
+    # XYZ Coordinates
     masses = np.array(masses_array[0])
     zmat = create_zmat(popt)
     coords = internal_to_cartesian(zmat)
@@ -260,10 +258,19 @@ def print_results(
     eigvals, eigvecs = diagonalize_I_tensor(coords, masses)
     coords = coords @ eigvecs
 
-    if print_struct:
-        print()
-        print("Cartesian Coordinates [A]:")
-        for x, y, z in coords:
-            print(f"{x:13.6f} {y:13.6f} {z:13.6f}")
+    report_coords = ["Cartesian Coordinates [A]:"]
+    for x, y, z in coords:
+        report_coords.append(f"{x:13.6f} {y:13.6f} {z:13.6f}")
+    report_coords = '\n'.join(report_coords)
 
-    return (N_degf, DEVIATION, RMS, WRMS, residuals, coords)
+    output = {
+        'params': params,
+        'stats': stats,
+        'residuals': residuals,
+        'coords': coords,
+        'report_params': report_params,
+        'report_stats': report_stats,
+        'report_residuals': report_residuals,
+        'report_coords': report_coords,
+    }
+    return output

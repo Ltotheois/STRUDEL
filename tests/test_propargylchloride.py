@@ -253,20 +253,14 @@ class TestPropargylChloride(unittest.TestCase):
             sigmas_I = (str.h / (8 * np.pi**2 * B_e_SE * 1e6)) * sigmas / B_e_SE
             p0 = initial_params_qcc
 
-            print_kwargs = {'print_stats': True, 'print_resid': True, 'print_struct': True, 'print_params': True}
-
-            print('Moments of Inertia (unweighted)')
             popt, pcov, perr = str.fit_moments_of_inertia(fzmat, masses, I_e_SE, p0=p0, sigmas=None, constants_mask=constants_mask)
-            _ = str.print_results(fzmat, masses, popt, perr, B_e_SE, moments_of_inertia=True, sigmas=None, constants_mask=constants_mask, **print_kwargs)
+            _ = str.summarize_results(fzmat, masses, popt, perr, B_e_SE, moments_of_inertia=True, sigmas=None, constants_mask=constants_mask)
 
-            print('\nMoments of Inertia (weighted)')
             popt, pcov, perr = str.fit_moments_of_inertia(fzmat, masses, I_e_SE, p0=p0, sigmas=sigmas_I)
-            _ = str.print_results(fzmat, masses, popt, perr, B_e_SE, moments_of_inertia=True, sigmas=sigmas_I, constants_mask=constants_mask, **print_kwargs)
+            _ = str.summarize_results(fzmat, masses, popt, perr, B_e_SE, moments_of_inertia=True, sigmas=sigmas_I, constants_mask=constants_mask)
 
-            print('\nRotational Constants (unweighted)')
             popt, pcov, perr = str.fit_rotational_constants(fzmat, masses, B_e_SE, p0=p0, sigmas=None)
-            _ = str.print_results(fzmat, masses, popt, perr, B_e_SE, sigmas=None, constants_mask=constants_mask, **print_kwargs)
+            _ = str.summarize_results(fzmat, masses, popt, perr, B_e_SE, sigmas=None, constants_mask=constants_mask)
 
-            print('\nRotational Constants (weighted)')
             popt, pcov, perr = str.fit_rotational_constants(fzmat, masses, B_e_SE, p0=p0, sigmas=sigmas)
-            _ = str.print_results(fzmat, masses, popt, perr, B_e_SE, sigmas=sigmas, constants_mask=constants_mask, **print_kwargs)
+            _ = str.summarize_results(fzmat, masses, popt, perr, B_e_SE, sigmas=sigmas, constants_mask=constants_mask)

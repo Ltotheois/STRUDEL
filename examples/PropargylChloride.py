@@ -161,20 +161,23 @@ if __name__ == '__main__':
     sigmas_I = (str.h / (8 * np.pi**2 * B_e_SE * 1e6)) * sigmas / B_e_SE
     p0 = initial_params_qcc
 
-    print_kwargs = {'print_stats': False, 'print_resid': False, 'print_struct': False, 'print_params': True}
-
-    print('Moments of Inertia (unweighted)')
+    outputs = []
     popt, pcov, perr = str.fit_moments_of_inertia(fzmat, masses, I_e_SE, p0=p0, sigmas=None)
-    _ = str.print_results(fzmat, masses, popt, perr, B_e_SE, moments_of_inertia=True, sigmas=None, **print_kwargs)
+    outputs.append(str.summarize_results(fzmat, masses, popt, perr, B_e_SE, moments_of_inertia=True, sigmas=None))
 
-    print('\nMoments of Inertia (weighted)')
     popt, pcov, perr = str.fit_moments_of_inertia(fzmat, masses, I_e_SE, p0=p0, sigmas=sigmas_I)
-    _ = str.print_results(fzmat, masses, popt, perr, B_e_SE, moments_of_inertia=True, sigmas=sigmas_I, **print_kwargs)
+    outputs.append(str.summarize_results(fzmat, masses, popt, perr, B_e_SE, moments_of_inertia=True, sigmas=sigmas_I))
 
-    print('\nRotational Constants (unweighted)')
     popt, pcov, perr = str.fit_rotational_constants(fzmat, masses, B_e_SE, p0=p0, sigmas=None)
-    _ = str.print_results(fzmat, masses, popt, perr, B_e_SE, sigmas=None, **print_kwargs)
+    outputs.append(str.summarize_results(fzmat, masses, popt, perr, B_e_SE, sigmas=None))
 
-    print('\nRotational Constants (weighted)')
     popt, pcov, perr = str.fit_rotational_constants(fzmat, masses, B_e_SE, p0=p0, sigmas=sigmas)
-    _ = str.print_results(fzmat, masses, popt, perr, B_e_SE, sigmas=sigmas, **print_kwargs)
+    outputs.append(str.summarize_results(fzmat, masses, popt, perr, B_e_SE, sigmas=sigmas))
+
+    print()
+    print('|' + ' Inertia (unw.)    | Inertia (wei.)    | Rot Const (unw.)  | Rot Const (wei.)  |' )
+    print('|' + (('-' * 19) + '|') * len(outputs))
+    for i in range(len(p0)):
+        values = [output['params'][i] for output in outputs]
+        print('| ' + ' | '.join([f'{val[0]:8.4f} ± {val[1]:6.4f}' for val in values]) + ' |')
+    print()

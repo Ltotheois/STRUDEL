@@ -144,7 +144,14 @@ popt, pcov, perr = str.fit_rotational_constants(fzmat, masses, B_e_SE, p0=p0, si
 ```
 Afterwards, the results can be displayed by running
 ```python
-_ = str.print_results(fzmat, masses, popt, perr, B_e_SE, sigmas=sigmas)
+output = str.summarize_results(fzmat, masses, popt, perr, B_e_SE, sigmas=sigmas)
+print(output['report_params'])
+print()
+print(output['report_stats'])
+print()
+print(output['report_residuals'])
+print()
+print(output['report_coords'])
 ```
 
 The complete code is found in the *examples* folder.

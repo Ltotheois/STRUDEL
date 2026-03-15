@@ -121,7 +121,10 @@ if __name__ == '__main__':
     constants_mask = np.full((10, 3), True)
     constants_mask[1, :] = constants_mask[3, :] = False
 
-    print_kwargs = {'print_stats': True, 'print_resid': True, 'print_struct': True, 'print_params': True}
-
     popt, pcov, perr = str.fit_rotational_constants(fzmat, masses, B_e_SE, p0=initial_params_qcc, constants_mask=constants_mask)
-    _ = str.print_results(fzmat, masses, popt, perr, B_e_SE, constants_mask=constants_mask, **print_kwargs)
+    output = str.summarize_results(fzmat, masses, popt, perr, B_e_SE, constants_mask=constants_mask)
+    print(output['report_params'])
+    print()
+    print(output['report_stats'])
+    print()
+    print(output['report_coords'])
