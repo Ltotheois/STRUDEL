@@ -78,6 +78,14 @@ def diagonalize_I_tensor(coords, masses):
     return (eigvals, eigvecs)
 
 
+def transform_to_principal_axes(coords, masses):
+    center_of_mass = np.sum(coords * masses[:, np.newaxis], axis=0) / np.sum(masses)
+    coords -= center_of_mass
+    eigvals, eigvecs = diagonalize_I_tensor(coords, masses)
+    coords = coords @ eigvecs
+    return coords
+
+
 def moments_of_inertia_to_rotational_constants(eigvals):
     return h / (8 * np.pi**2 * eigvals) / 1e6
 
@@ -256,11 +264,7 @@ def summarize_results(
     masses = np.array(masses_array[0])
     zmat = create_zmat(popt)
     coords = internal_to_cartesian(zmat)
-
-    center_of_mass = np.sum(coords * masses[:, np.newaxis], axis=0) / np.sum(masses)
-    coords -= center_of_mass
-    eigvals, eigvecs = diagonalize_I_tensor(coords, masses)
-    coords = coords @ eigvecs
+    coords = transform_to_principal_axes(coords, masses)
 
     report_coords = ["Cartesian Coordinates [A]:"]
     for x, y, z in coords:

@@ -169,11 +169,7 @@ class TestPropargylChloride(unittest.TestCase):
 
         zmat = fzmat(initial_params)
         coords = strudel.internal_to_cartesian(zmat)
-
-        center_of_mass = np.sum(coords * ms[:, np.newaxis], axis=0) / np.sum(ms)
-        coords -= center_of_mass
-        eigvals, eigvecs = strudel.diagonalize_I_tensor(coords, ms)
-        coords = coords @ eigvecs
+        coords = strudel.transform_to_principal_axes(coords, ms)
 
         for column_strudel, column_strfit in zip(coords.T, strfit_xyz_coords.T):
             self.assertTrue(
