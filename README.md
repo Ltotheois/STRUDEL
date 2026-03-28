@@ -1,4 +1,4 @@
-# STRucture DEtermination Libary
+# STRUcture DEtermination Libary
 
 <h1 align="center">
 <img src="https://hera.ph1.uni-koeln.de/~bonah/resources/images/MolStrudel.png" width="300">
