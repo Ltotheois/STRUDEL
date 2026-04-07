@@ -13,26 +13,29 @@ m0 = const.m_u
 
 
 representations = {
-    'Ir':   ('z', 'x', 'y'),
-    'IIr':  ('y', 'z', 'x'),
-    'IIIr': ('x', 'y', 'z'),
-    'Il':   ('z', 'y', 'x'),
-    'IIl':  ('x', 'z', 'y'),
-    'IIIl': ('y', 'x', 'z'),
+    "Ir": ("z", "x", "y"),
+    "IIr": ("y", "z", "x"),
+    "IIIr": ("x", "y", "z"),
+    "Il": ("z", "y", "x"),
+    "IIl": ("x", "z", "y"),
+    "IIIl": ("y", "x", "z"),
 }
+
 
 # See Gordy and Cook, "Microwave Molecular Spectra"
 # Equations 8.101, 8.102, 8.103
-def correct_rotational_constants_for_centrifugal_distortion(Bs, Ds, reduction='A', representation='Ir'):
+def correct_rotational_constants_for_centrifugal_distortion(
+    Bs, Ds, reduction="A", representation="Ir"
+):
     correction = {}
-    if reduction == 'A':
+    if reduction == "A":
         Delta_J, Delta_JK, Delta_K, delta_J, delta_K = Ds
-        
+
         correction["x"] = 2 * Delta_J + Delta_JK - 2 * delta_J - 2 * delta_K
         correction["y"] = 2 * Delta_J + Delta_JK + 2 * delta_J + 2 * delta_K
         correction["z"] = 2 * Delta_J
 
-    elif reduction == 'S':
+    elif reduction == "S":
         D_J, D_JK, D_K, d_1, d_2 = Ds
 
         correction["x"] = 2 * D_J + D_JK + 2 * d_1 + 4 * d_2
@@ -41,18 +44,23 @@ def correct_rotational_constants_for_centrifugal_distortion(Bs, Ds, reduction='A
 
     else:
         raise ValueError('Reduction has to be either "A" or "S".')
-    
+
     if representation not in representations.keys():
-        raise ValueError(f'Representation has to be any of the following values: {representations.keys()}')
+        raise ValueError(
+            f"Representation has to be any of the following values: {representations.keys()}"
+        )
     index_order = representations[representation]
-    correction = {index_abc: correction[index_xyz] for index_abc, index_xyz in zip('abc', index_order)}
+    correction = {
+        index_abc: correction[index_xyz]
+        for index_abc, index_xyz in zip("abc", index_order)
+    }
 
     A, B, C = Bs
 
     A_c = A + correction["a"]
     B_c = B + correction["b"]
     C_c = C + correction["c"]
-    return(A_c, B_c, C_c)
+    return (A_c, B_c, C_c)
 
 
 def internal_to_cartesian(zmat):
