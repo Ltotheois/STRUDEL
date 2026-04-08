@@ -23,7 +23,7 @@ representations = {
 
 
 # See Gordy and Cook, "Microwave Molecular Spectra"
-# Equations 8.101, 8.102, 8.103
+# Equations 8.101, 8.102, 8.103 as well as 8.114, 8.115, 8.116
 def correct_rotational_constants_for_centrifugal_distortion(
     Bs, Ds, reduction="A", representation="Ir"
 ):
