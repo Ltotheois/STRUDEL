@@ -19,5 +19,10 @@ classifiers = [
 ]
 keywords = ["Structure Determination", "Molecules", "Spectroscopy"]
 
+[project.optional-dependencies]
+dev = [
+    "ruff",
+]
+
 [project.urls]
 "Homepage" = "https://github.com/Ltotheois/Strudel/"
