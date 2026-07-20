@@ -159,7 +159,6 @@ strfit_xyz_coords = np.array(
 
 
 class TestPropargylChloride(unittest.TestCase):
-
     # Check if the the the conversion from internal to xyz coordinates gives the same results
     # as STRFIT by Zbigniew Kisiel
     # Z. Kisiel, J. Mol. Spectrosc. 218, 58-67 (2003)

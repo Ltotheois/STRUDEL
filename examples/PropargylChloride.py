@@ -29,7 +29,6 @@ Run with:
     python examples/PropargylChloride.py
 """
 
-
 import mol_strudel as strudel
 import numpy as np
 

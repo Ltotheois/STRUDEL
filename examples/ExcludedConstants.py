@@ -23,7 +23,6 @@ Run with:
     python examples/ExcludedConstants.py
 """
 
-
 import mol_strudel as strudel
 import numpy as np
 

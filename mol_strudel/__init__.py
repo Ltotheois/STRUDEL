@@ -187,9 +187,11 @@ def fit_rotational_constants(
         if sigmas is not None:
             sigmas = sigmas[constants_mask]
 
-    fit_function = lambda *args, **kwargs: calculate_rotational_constants(
-        create_zmat, *args, **kwargs, constants_mask=constants_mask
-    )
+    def fit_function(*args, **kwargs):
+        return calculate_rotational_constants(
+            create_zmat, *args, **kwargs, constants_mask=constants_mask
+        )
+
     popt, pcov = curve_fit(
         fit_function, masses_array, Bs, sigma=sigmas, **curve_fit_kwargs
     )
@@ -210,9 +212,11 @@ def fit_moments_of_inertia(
         if sigmas is not None:
             sigmas = sigmas[constants_mask]
 
-    fit_function = lambda *args, **kwargs: calculate_moments_of_inertia(
-        create_zmat, *args, **kwargs, constants_mask=constants_mask
-    )
+    def fit_function(*args, **kwargs):
+        return calculate_moments_of_inertia(
+            create_zmat, *args, **kwargs, constants_mask=constants_mask
+        )
+
     popt, pcov = curve_fit(
         fit_function, masses_array, Is, sigma=sigmas, **curve_fit_kwargs
     )
@@ -231,13 +235,17 @@ def summarize_results(
     sigmas=None,
 ):
     if moments_of_inertia:
-        fit_function = lambda *args, **kwargs: calculate_moments_of_inertia(
-            *args, **kwargs, constants_mask=constants_mask
-        )
+
+        def fit_function(*args, **kwargs):
+            return calculate_moments_of_inertia(
+                *args, **kwargs, constants_mask=constants_mask
+            )
     else:
-        fit_function = lambda *args, **kwargs: calculate_rotational_constants(
-            *args, **kwargs, constants_mask=constants_mask
-        )
+
+        def fit_function(*args, **kwargs):
+            return calculate_rotational_constants(
+                *args, **kwargs, constants_mask=constants_mask
+            )
 
     ys = ys.flatten()
     if sigmas is not None:
@@ -288,10 +296,10 @@ def summarize_results(
         report_stats.append(f"Degf:           {N_degf:5.0f}")
     else:
         report_stats.append(
-            f"Deviation of Fit: {deviation*1000:5.0f} kHz  (Sqrt( Sum( (Bo-c)**2 )/Degf)"
+            f"Deviation of Fit: {deviation * 1000:5.0f} kHz  (Sqrt( Sum( (Bo-c)**2 )/Degf)"
         )
         report_stats.append(
-            f"RMS of Fit:       {rms*1000:5.0f} kHz  (Sqrt( Mean( (Bo-c)**2 ))"
+            f"RMS of Fit:       {rms * 1000:5.0f} kHz  (Sqrt( Mean( (Bo-c)**2 ))"
         )
         report_stats.append(f"Degf:             {N_degf:5.0f}")
 

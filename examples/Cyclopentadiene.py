@@ -17,7 +17,6 @@ Run with:
     python examples/Cyclopentadiene.py
 """
 
-
 import mol_strudel as strudel
 import numpy as np
 
