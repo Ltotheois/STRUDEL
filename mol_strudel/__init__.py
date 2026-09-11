@@ -129,9 +129,13 @@ def diagonalize_I_tensor(coords, masses):
     return (eigvals, eigvecs)
 
 
-def transform_to_principal_axes(coords, masses):
+def center_at_mass(coords, masses):
     center_of_mass = np.sum(coords * masses[:, np.newaxis], axis=0) / np.sum(masses)
-    coords -= center_of_mass
+    return coords - center_of_mass
+
+
+def transform_to_principal_axes(coords, masses):
+    coords = center_at_mass(coords, masses)
     eigvals, eigvecs = diagonalize_I_tensor(coords, masses)
     coords = coords @ eigvecs
     return coords
@@ -151,11 +155,10 @@ def calculate_moments_of_inertia(
     moments_of_inertia = []
     for masses in masses_array:
         # Move molecule to center of mass
-        center_of_mass = np.sum(coords * masses[:, np.newaxis], axis=0) / np.sum(masses)
-        coords -= center_of_mass
+        centered_coords = center_at_mass(coords, masses)
 
         # Diagonalize I tensor
-        eigvals, eigvecs = diagonalize_I_tensor(coords, masses)
+        eigvals, eigvecs = diagonalize_I_tensor(centered_coords, masses)
         moments_of_inertia.extend(eigvals)
 
     moments_of_inertia = np.array(moments_of_inertia)
@@ -174,54 +177,63 @@ def calculate_rotational_constants(
     return moments_of_inertia_to_rotational_constants(moments_of_inertia)
 
 
-def fit_rotational_constants(
-    create_zmat, masses_array, Bs, sigmas=None, constants_mask=None, **curve_fit_kwargs
+def _fit(
+    calculate_fn,
+    create_zmat,
+    masses_array,
+    ys,
+    sigmas=None,
+    constants_mask=None,
+    **curve_fit_kwargs,
 ):
     if sigmas is not None:
         sigmas = sigmas.flatten()
 
-    Bs = Bs.flatten()
+    ys = ys.flatten()
     if constants_mask is not None:
         constants_mask = constants_mask.flatten()
-        Bs = Bs[constants_mask]
+        ys = ys[constants_mask]
         if sigmas is not None:
             sigmas = sigmas[constants_mask]
 
     def fit_function(*args, **kwargs):
-        return calculate_rotational_constants(
+        return calculate_fn(
             create_zmat, *args, **kwargs, constants_mask=constants_mask
         )
 
     popt, pcov = curve_fit(
-        fit_function, masses_array, Bs, sigma=sigmas, **curve_fit_kwargs
+        fit_function, masses_array, ys, sigma=sigmas, **curve_fit_kwargs
     )
     perr = np.sqrt(np.diag(pcov))
     return popt, pcov, perr
+
+
+def fit_rotational_constants(
+    create_zmat, masses_array, Bs, sigmas=None, constants_mask=None, **curve_fit_kwargs
+):
+    return _fit(
+        calculate_rotational_constants,
+        create_zmat,
+        masses_array,
+        Bs,
+        sigmas=sigmas,
+        constants_mask=constants_mask,
+        **curve_fit_kwargs,
+    )
 
 
 def fit_moments_of_inertia(
     create_zmat, masses_array, Is, sigmas=None, constants_mask=None, **curve_fit_kwargs
 ):
-    if sigmas is not None:
-        sigmas = sigmas.flatten()
-
-    Is = Is.flatten()
-    if constants_mask is not None:
-        constants_mask = constants_mask.flatten()
-        Is = Is[constants_mask]
-        if sigmas is not None:
-            sigmas = sigmas[constants_mask]
-
-    def fit_function(*args, **kwargs):
-        return calculate_moments_of_inertia(
-            create_zmat, *args, **kwargs, constants_mask=constants_mask
-        )
-
-    popt, pcov = curve_fit(
-        fit_function, masses_array, Is, sigma=sigmas, **curve_fit_kwargs
+    return _fit(
+        calculate_moments_of_inertia,
+        create_zmat,
+        masses_array,
+        Is,
+        sigmas=sigmas,
+        constants_mask=constants_mask,
+        **curve_fit_kwargs,
     )
-    perr = np.sqrt(np.diag(pcov))
-    return popt, pcov, perr
 
 
 def summarize_results(
@@ -277,6 +289,11 @@ def summarize_results(
     # Statistics
     stats = {}
     stats["Degf"] = N_degf = len(ys) - len(popt)
+    if N_degf <= 0:
+        raise ValueError(
+            f"Not enough data points ({len(ys)}) to determine the deviation of the "
+            f"fit for {len(popt)} parameters; at least {len(popt) + 1} are required."
+        )
     stats["Deviation"] = deviation = np.sqrt(np.sum(residuals**2) / N_degf)
     stats["RMS"] = rms = np.sqrt(np.mean(residuals**2))
 
@@ -304,8 +321,9 @@ def summarize_results(
         report_stats.append(f"Degf:             {N_degf:5.0f}")
 
     if sigmas is not None:
+        residual_label = "Io-c" if moments_of_inertia else "Bo-c"
         report_stats.append(
-            f"WRMS of Fit:      {wrms:5.2f}    (Sqrt( Mean( (Bo-c)**2 / sigma**2 ))"
+            f"WRMS of Fit:      {wrms:5.2f}    (Sqrt( Mean( ({residual_label})**2 / sigma**2 ))"
         )
     report_stats = "\n".join(report_stats)
 

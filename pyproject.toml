@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mol-strudel"
-version = "1.0.0"
+version = "1.0.1"
 authors = [
   { name="Luis Bonah", email="bonah@ph1.uni-koeln.de" },
 ]
@@ -12,9 +12,9 @@ description = "STRUcture DEtermination Library for molecular rotational spectros
 readme = "README.md"
 requires-python = ">=3.7"
 dependencies = ['numpy', 'scipy']
+license = "MIT"
 classifiers = [
 	"Programming Language :: Python :: 3",
-	"License :: OSI Approved :: MIT License",
 	"Operating System :: OS Independent",
 ]
 keywords = ["Structure Determination", "Molecules", "Spectroscopy"]
