@@ -246,18 +246,12 @@ def summarize_results(
     moments_of_inertia=False,
     sigmas=None,
 ):
-    if moments_of_inertia:
+    calculate_fn = (
+        calculate_moments_of_inertia if moments_of_inertia else calculate_rotational_constants
+    )
 
-        def fit_function(*args, **kwargs):
-            return calculate_moments_of_inertia(
-                *args, **kwargs, constants_mask=constants_mask
-            )
-    else:
-
-        def fit_function(*args, **kwargs):
-            return calculate_rotational_constants(
-                *args, **kwargs, constants_mask=constants_mask
-            )
+    def fit_function(*args, **kwargs):
+        return calculate_fn(*args, **kwargs, constants_mask=constants_mask)
 
     ys = ys.flatten()
     if sigmas is not None:
@@ -274,9 +268,9 @@ def summarize_results(
     residuals = ys - ys_fit
 
     if moments_of_inertia:
-        residuals *= 1e20 / const.u
+        residuals *= 1e20 / m0
         if sigmas is not None:
-            sigmas *= 1e20 / const.u
+            sigmas *= 1e20 / m0
 
     # Parameters
     report_params = ["Parameters:"]
@@ -310,7 +304,7 @@ def summarize_results(
         report_stats.append(
             f"RMS of Fit:       {rms:12.8f} [uA²]  (Sqrt( Mean( (Io-c)**2 ))"
         )
-        report_stats.append(f"Degf:           {N_degf:5.0f}")
+        report_stats.append(f"Degf:             {N_degf:5.0f}")
     else:
         report_stats.append(
             f"Deviation of Fit: {deviation * 1000:5.0f} kHz  (Sqrt( Sum( (Bo-c)**2 )/Degf)"
